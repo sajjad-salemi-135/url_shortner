@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
-
+	"github.com/sajjad-salemi-135/url_shortner/handler/modul"
+	"github.com/sajjad-salemi-135/url_shortner/db"
 )
 
 
@@ -19,9 +21,9 @@ func main() {
 
 	router := gin.Default()
 
-	router.GET("/", router.get)
-	router.POST("/", post)
-	router.GET("/:shortkey", redirect)
+	router.GET("/", modul.get)
+	router.POST("/", modul.post)
+	router.GET("/:shortkey", modul.redirect)
 
 	router.LoadHTMLGlob("./template/*.html")
 	err = router.Run("localhost:8080")

@@ -5,8 +5,11 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sajjad-salemi-135/url_shortner/db/db"
+	"github.com/sajjad-salemi-135/url_shortner/handler/generator"
 )
 
+var ur = shortner{urls: make(map[string]string)}
 
 type shortner struct {
 	urls map[string]string
@@ -25,7 +28,7 @@ func post(c *gin.Context) {
 		c.String(404, "bad req", gin.H{"error": "All fields are required and must be valid."})
 	}
 
-	shortkey := generateshortkey()
+	shortkey := generator.generateshortkey()
 
 	db.postdb(shortkey,form.Originalurl)
 	
