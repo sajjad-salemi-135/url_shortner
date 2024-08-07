@@ -6,12 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
-	"github.com/sajjad-salemi-135/url_shortner/handler/modul"
+	"github.com/sajjad-salemi-135/url_shortner/handler"
 	"github.com/sajjad-salemi-135/url_shortner/db"
 )
-
-
-
 
 
 func main() {
