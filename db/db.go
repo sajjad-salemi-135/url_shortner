@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
+	_ "github.com/lib/pq"
 	"github.com/gin-gonic/gin"
-	"github.com/sajjad-salemi-135/url_shortner/handler/modul"
+	"github.com/sajjad-salemi-135/url_shortner/handler"
 	
 )
 
@@ -53,10 +53,10 @@ func redirectdb(shortKey string,originalurl string,c *gin.Context){
 }
 
 func postdb(shortkey string, originalurl string, c *gin.Context){
-	modul.ur.mu.Lock()
+	handler.ur.mu.Lock()
 	stmt, err := db.Prepare("INSERT INTO url (original_url, short_url) VALUES ($1, $2)")
 	if err != nil {
-		modul.ur.mu.Unlock()
+		handler.ur.mu.Unlock()
 		log.Println("Failed to prepare query:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save URL. Please try again."})
 		return
@@ -64,7 +64,7 @@ func postdb(shortkey string, originalurl string, c *gin.Context){
 	defer stmt.Close()
 	_, err = stmt.Exec(originalurl, shortkey)
 	if err != nil {
-		modul.ur.mu.Unlock()
+		handler.ur.mu.Unlock()
 		log.Printf("Failed to execute query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to save url. Please try again.",
@@ -72,5 +72,5 @@ func postdb(shortkey string, originalurl string, c *gin.Context){
 		return
 	}
 
-	modul.ur.mu.Unlock()
+	handler.ur.mu.Unlock()
 }

@@ -29,7 +29,7 @@ func post(c *gin.Context) {
 
 	shortkey := generateshortkey()
 
-	db.postdb(shortkey,form.Originalurl)
+	db.postdb(shortkey,form.Originalurl,c)
 	
 	c.JSON(http.StatusOK, gin.H{"short url": shortkey, "original url": form.Originalurl})
 }
@@ -38,7 +38,7 @@ func redirect(c *gin.Context) {
 	var originalurl string
 	shortKey := c.Param("shortkey")
 
-	db.redirectdb(shortKey,originalurl)
+	db.redirectdb(shortKey,originalurl,c)
 
 	c.Redirect(http.StatusMovedPermanently, originalurl)
 }
