@@ -15,5 +15,5 @@ func Generateshortkey() string {
 		shortkey[i] = charset[rand.Intn(len(charset))]
 	}
 	return string(shortkey)
-	
+
 }

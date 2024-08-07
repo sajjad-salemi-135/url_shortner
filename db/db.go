@@ -36,7 +36,6 @@ func Opendatabase() {
 	if err != nil {
 		panic("Failed to connect to database")
 	}
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
@@ -44,7 +43,12 @@ func Opendatabase() {
 	}
 }
 
-func Redirectdb(shortKey string,originalurl string,c *gin.Context){
+func Closedb() {
+	db.Close()
+}
+
+func Redirectdb(shortKey string, c *gin.Context) string {
+	var originalurl string
 	err := db.QueryRow("select original_url from url where short_url=$1", shortKey).Scan(&originalurl)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -53,17 +57,18 @@ func Redirectdb(shortKey string,originalurl string,c *gin.Context){
 			log.Println("Failed to retrieve URL:", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve URL"})
 		}
-		return
+		return ""
 	}
+	return originalurl
 }
 
-func Postdb(shortkey string, originalurl string, c *gin.Context){
+func Postdb(shortkey string, originalurl string, c *gin.Context) {
 	ur.mu.Lock()
 	defer ur.mu.Unlock()
 	stmt, err := db.Prepare("INSERT INTO url (original_url, short_url) VALUES ($1, $2)")
 	if err != nil {
 		log.Println("Failed to prepare query:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save URL. Please try again."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "insert Failed to save URL. Please try again."})
 		return
 	}
 	defer stmt.Close()
@@ -72,7 +77,7 @@ func Postdb(shortkey string, originalurl string, c *gin.Context){
 	if err != nil {
 		log.Printf("Failed to execute query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to save url. Please try again.",
+			"error": "excute Failed to save url. Please try again.",
 		})
 		return
 	}

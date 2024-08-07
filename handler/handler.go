@@ -7,8 +7,6 @@ import (
 	"github.com/sajjad-salemi-135/url_shortner/db"
 )
 
-
-
 func Get(c *gin.Context) {
 	c.HTML(http.StatusOK, "get.html", gin.H{"title": "main web"})
 }
@@ -23,8 +21,8 @@ func Post(c *gin.Context) {
 
 	shortkey := Generateshortkey()
 
-	db.Postdb(shortkey,form.Originalurl,c)
-	
+	db.Postdb(shortkey, form.Originalurl, c)
+
 	c.JSON(http.StatusOK, gin.H{"short url": shortkey, "original url": form.Originalurl})
 }
 
@@ -32,8 +30,7 @@ func Redirect(c *gin.Context) {
 	var originalurl string
 	shortKey := c.Param("shortkey")
 
-	db.Redirectdb(shortKey,originalurl,c)
+	originalurl = db.Redirectdb(shortKey, c)
 
 	c.Redirect(http.StatusMovedPermanently, originalurl)
 }
-
