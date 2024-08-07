@@ -1,11 +1,11 @@
-package router
+package handler
 
 import (
-	"crypto/rand"
+	"math/rand"
 	"time"
 )
 
-func generateshortkey() string {
+func Generateshortkey() string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	const keyLength = 6
 

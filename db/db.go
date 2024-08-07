@@ -5,14 +5,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	_ "github.com/lib/pq"
+	"sync"
+
 	"github.com/gin-gonic/gin"
-	"github.com/sajjad-salemi-135/url_shortner/handler"
-	
+	_ "github.com/lib/pq"
 )
 
 var db *sql.DB
+var ur = shortner{urls: make(map[string]string)}
 
+type shortner struct {
+	urls map[string]string
+	mu   sync.Mutex
+}
 
 const (
 	host     = "localhost"
@@ -22,7 +27,7 @@ const (
 	port     = 5432
 )
 
-func opendatabase() {
+func Opendatabase() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -39,7 +44,7 @@ func opendatabase() {
 	}
 }
 
-func redirectdb(shortKey string,originalurl string,c *gin.Context){
+func Redirectdb(shortKey string,originalurl string,c *gin.Context){
 	err := db.QueryRow("select original_url from url where short_url=$1", shortKey).Scan(&originalurl)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -52,25 +57,24 @@ func redirectdb(shortKey string,originalurl string,c *gin.Context){
 	}
 }
 
-func postdb(shortkey string, originalurl string, c *gin.Context){
-	handler.ur.mu.Lock()
+func Postdb(shortkey string, originalurl string, c *gin.Context){
+	ur.mu.Lock()
+	defer ur.mu.Unlock()
 	stmt, err := db.Prepare("INSERT INTO url (original_url, short_url) VALUES ($1, $2)")
 	if err != nil {
-		handler.ur.mu.Unlock()
 		log.Println("Failed to prepare query:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save URL. Please try again."})
 		return
 	}
 	defer stmt.Close()
+
 	_, err = stmt.Exec(originalurl, shortkey)
 	if err != nil {
-		handler.ur.mu.Unlock()
 		log.Printf("Failed to execute query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to save url. Please try again.",
 		})
 		return
 	}
-
-	handler.ur.mu.Unlock()
+	c.JSON(http.StatusOK, gin.H{"message": "URL saved successfully."})
 }

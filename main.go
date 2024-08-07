@@ -5,23 +5,25 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sajjad-salemi-135/url_shortner/handler"
 	"github.com/sajjad-salemi-135/url_shortner/db"
+	"github.com/sajjad-salemi-135/url_shortner/handler"
 )
 
 
 func main() {
-	db.opendatabase()
+	db.Opendatabase()
 	var err error
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.Default()
 
-	router.GET("/", handler.get)
-	router.POST("/", handler.post)
-	router.GET("/:shortkey", handler.redirect)
-
 	router.LoadHTMLGlob("./template/*.html")
+
+	router.GET("/", handler.Get)
+	router.POST("/", handler.Post)
+	router.GET("/:shortkey", handler.Redirect)
+
+
 	err = router.Run("localhost:8080")
 	if err != nil {
 		fmt.Println(err)
