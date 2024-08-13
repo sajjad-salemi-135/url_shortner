@@ -3,7 +3,6 @@ module github.com/sajjad-salemi-135/url_shortner
 go 1.22.1
 
 require (
-	github.com/deatil/go-encoding v1.0.2007
 	github.com/gin-gonic/gin v1.10.0
 	github.com/lib/pq v1.10.9
 )
