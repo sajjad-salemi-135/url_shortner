@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	"github.com/deatil/go-encoding/base62"
 )
 
 const (
@@ -66,13 +64,10 @@ func Generateshortkey() string {
 	sr := Newsnowflake()
 	id := sr.Generator()
 	id1 := fmt.Sprintf("%034b", id)
-	desimalid, _ := strconv.ParseInt(id1, 2, 64)
-	fmt.Println(desimalid)
-
-	desimalid1 := strconv.FormatInt(desimalid, 10)
-	fmt.Println(desimalid1)
-	std := base62.NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
-	encoded := std.EncodeToString([]byte(desimalid1))
-	fmt.Println(encoded)
-	return string(encoded)
+	desimalid, err := strconv.ParseInt(id1, 2, 64)
+	if err != nil {
+		fmt.Println("err:",err)
+	}
+	desimalid1 := strconv.FormatInt(desimalid, 36)
+	return string(desimalid1)
 }
